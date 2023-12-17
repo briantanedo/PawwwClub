@@ -2,7 +2,7 @@ import {Routes, Route} from 'react-router-dom';
 
 import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
-import { AllUsers, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile } from './_root/pages';
+import { AllUsers, CreateDog, CreatePost, EditPost, Explore, Home, PostDetails, Profile, Saved, UpdateProfile } from './_root/pages';
 import './globals.css';
 import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
@@ -30,6 +30,7 @@ const App = () => {
                 <Route path="/posts/:id" element={<PostDetails />} />
                 <Route path="/profile/:id/*" element={<Profile />} />
                 <Route path="/update-profile/:id" element={<UpdateProfile />} />
+                <Route path="/create-dog" element={<CreateDog />} />
             </Route>
         </Routes>
         

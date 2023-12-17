@@ -5,62 +5,64 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "../ui/textarea"
 import FileUploader from "../shared/FileUploader"
-import { PostValidation } from "@/lib/validation"
+import { DogValidation } from "@/lib/validation"
 import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { useToast } from "../ui/use-toast"
 import { useNavigate } from "react-router-dom"
-import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations"
+import { useCreateDog, useUpdateDog } from "@/lib/react-query/queriesAndMutations"
 
-type PostFormProps = {
-    post?: Models.Document;
+type DogFormProps = {
+    dog?: Models.Document;
     action: 'Create' | 'Update';
 }
 
-const PostForm = ({ post, action }: PostFormProps) => {
-   const { mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
-   const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
+const DogForm = ({ dog, action }: DogFormProps) => {
+   const { mutateAsync: createDog, isPending: isLoadingCreate } = useCreateDog();
+   const { mutateAsync: updateDog, isPending: isLoadingUpdate } = useUpdateDog();
 
    const { user } = useUserContext();
    const { toast } = useToast();
    const navigate = useNavigate();
 
     // 1. Define your form.
-  const form = useForm<z.infer<typeof PostValidation>>({
-    resolver: zodResolver(PostValidation),
+  const form = useForm<z.infer<typeof DogValidation>>({
+    resolver: zodResolver(DogValidation),
     defaultValues: {
-      caption: post ? post?.caption : "",
+      name: dog ? dog?.name : '',
+      household: dog ? dog.householdId : "",
+      breed: dog ? dog?.breed : "",
       file: [],
-      location: post ? post?.location : "",
-      tags: post ? post.tags.join(',') : '',
+      sex: dog ? dog?.sex : "",
+      bio: dog ? dog?.bio : "",
+      pcciId: dog ? dog?.pcciId : "",
     },
   })
  
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof PostValidation>) {
-    if(post && action === 'Update') {
-      const updatedPost = await updatePost({
+  async function onSubmit(values: z.infer<typeof DogValidation>) {
+    if(dog && action === 'Update') {
+      const updatedDog = await updateDog({
         ...values,
-        postId: post.$id,
-        imageId: post?.imageId,
-        imageUrl: post?.imageUrl,
+        dogId: dog.$id,
+        imageId: dog?.imageId,
+        imageUrl: dog?.imageUrl,
       })
 
-      if(!updatedPost) {
+      if(!updatedDog) {
         toast({ title: 'Please try again'})
       }
 
-      return navigate(`/posts/${post.$id}`);
+      return navigate(`/dogs/${dog.$id}`);
     }
 
-    const newPost = await createPost({
+    const newDog = await createDog({
         ...values,
         userId: user.id,
     })
     
-    if(!newPost) {
+    if(!newDog) {
         toast({
             title: 'Please try again',
         })
@@ -74,12 +76,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-9 w-full max-w-5xl">
         <FormField
           control={form.control}
-          name="caption"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">Name</FormLabel>
               <FormControl>
-                <Textarea className="shad-textarea custom-scrollbar" {...field} />
+                <Input type = "text" className="shad-input" {...field} />
               </FormControl>
               <FormMessage className="shad-form_message"/>
             </FormItem>
@@ -94,7 +96,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
               <FormControl>
                 <FileUploader 
                     fieldChange={field.onChange}
-                    mediaUrl={post?.imageUrl}
+                    mediaUrl={dog?.imageUrl}
                 />
               </FormControl>
               <FormMessage className="shad-form_message"/>
@@ -103,10 +105,10 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <FormField
           control={form.control}
-          name="location"
+          name="breed"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Location</FormLabel>
+              <FormLabel className="shad-form_label">Breed</FormLabel>
               <FormControl>
                 <Input type = "text" className="shad-input" {...field} />
               </FormControl>
@@ -116,16 +118,42 @@ const PostForm = ({ post, action }: PostFormProps) => {
         />
         <FormField
           control={form.control}
-          name="tags"
+          name="sex"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Tags (separated by comma " , ")</FormLabel>
+              <FormLabel className="shad-form_label">Sex</FormLabel>
               <FormControl>
-                <Input type = "text" className="shad-input" placeholder="Art, Expression, Learn" {...field}/>
+                <Input type = "text" className="shad-input" {...field} />
               </FormControl>
               <FormMessage className="shad-form_message"/>
             </FormItem>
           )}
+        />
+        <FormField
+          control={form.control}
+          name="bio"
+          render={({ field }) => (
+          <FormItem>
+            <FormLabel className="shad-form_label">About</FormLabel>
+            <FormControl>
+              <Input type = "text" className="shad-input" {...field} />
+            </FormControl>
+            <FormMessage className="shad-form_message"/>
+          </FormItem>
+        )}
+        />
+        <FormField
+          control={form.control}
+          name="pcciId"
+          render={({ field }) => (
+          <FormItem>
+            <FormLabel className="shad-form_label">PCCI ID</FormLabel>
+            <FormControl>
+              <Input type = "text" className="shad-input" {...field} />
+            </FormControl>
+            <FormMessage className="shad-form_message"/>
+          </FormItem>
+        )}
         />
         <div className="flex gap-4 items-center justify-end">
             <Button 
@@ -139,7 +167,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
                 className="shad-button_primary whitespace-nowrap"
                 disabled={isLoadingCreate || isLoadingUpdate}>
                 {isLoadingCreate || isLoadingUpdate && 'Loading...'}
-                {action} Post
+                {action} Dog
             </Button>
         </div>
       </form>
@@ -147,4 +175,4 @@ const PostForm = ({ post, action }: PostFormProps) => {
   )
 }
 
-export default PostForm
+export default DogForm

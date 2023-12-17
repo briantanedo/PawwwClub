@@ -55,3 +55,27 @@ export type INewUser = {
     username: string;
     password: string;
 };
+
+export type INewDog = {
+    userId: string;
+    householdId?: string;
+    name: string;
+    breed: string;
+    sex: string;
+    file: File[];
+    bio: string;
+    pcciId: string;
+};
+
+export type IUpdateDog = {
+    dogId: string;
+    householdId?: string;
+    name: string;
+    breed: string;
+    sex: string;
+    imageId: string;
+    imageUrl: URL;
+    file: File[];
+    bio: string;
+    pcciId: string;
+};

@@ -4,7 +4,7 @@
 
 import { ID, Query } from 'appwrite';
 
-import { INewPost, INewUser, IUpdatePost } from "@/types";
+import { INewDog, INewPost, INewUser, IUpdateDog, IUpdatePost } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 // ============================================================
@@ -228,6 +228,7 @@ export async function updatePost(post: IUpdatePost) {
                 undefined,
                 undefined,
                 undefined,
+                undefined,
                 "webp",
 
             );
@@ -417,5 +418,110 @@ export async function searchPosts(searchTerm: string) {
         return posts;
     } catch (error) {
         console.log(error);
+    }
+}
+
+// ============================================================
+// DOGS
+// ============================================================
+
+export async function createDog(dog: INewDog) {
+    try {
+        // Upload image to storage
+        const uploadedFile = await uploadFile(dog.file[0]);
+
+        if(!uploadedFile) throw Error;
+
+        // Get file url
+        const fileUrl = getFilePreview(uploadedFile.$id);
+        if(!fileUrl) {
+            await deleteFile(uploadedFile.$id);
+            throw Error;
+        }
+
+        // Convert tags in an array
+        // const tags = dog.tags?.replace(/ /g,'').split(',') || [];
+
+        // Save dog to database
+        const newDog = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.dogsCollectionId,
+            ID.unique(),
+            {
+                keyOwner: dog.userId,
+                household: dog.householdId,
+                imageUrl: fileUrl,
+                imageId: uploadedFile.$id,
+                name: dog.name,
+                breed: dog.breed,
+                sex: dog.sex,
+                bio: dog.bio,
+                pcciId: dog.pcciId
+            }
+        );
+
+        if(!newDog) {
+            await deleteFile(uploadedFile.$id);
+            throw Error;
+        }
+
+        return newDog;
+    } catch (error) {
+      console.log(error);
+    }
+}
+
+export async function updateDog(dog: IUpdateDog) {
+    const hasFileToUpdate = dog.file.length > 0;
+    try {
+        let image = {
+            imageUrl: dog.imageUrl,
+            imageId: dog.imageId,
+        }
+
+        if(hasFileToUpdate) {
+            // Upload image to storage
+            const uploadedFile = await uploadFile(dog.file[0]);
+            if(!uploadedFile) throw Error;
+            
+            // Get file url
+            const fileUrl = getFilePreview(uploadedFile.$id);
+            
+            if(!fileUrl) {
+                await deleteFile(uploadedFile.$id);
+                throw Error;
+            }
+
+            image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id}
+        }
+
+        // Convert tags in an array
+        // const tags = post.tags?.replace(/ /g,'').split(',') || [];
+
+        // Save post to database
+        const updatedDog = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            dog.dogId,
+            {
+                householdId: dog.householdId,
+                name: dog.name,
+                breed: dog.breed,
+                sex: dog.sex,
+                imageId: image.imageId,
+                imageUrl: image.imageUrl,
+                bio: dog.bio,
+                pcciId: dog.pcciId,
+            }
+        );
+
+        if(!updatedDog) {
+            await deleteFile(dog.imageId);
+            throw Error;
+        }
+
+        return updatedDog;
+    } catch (error) {
+      console.log(error);
     }
 }

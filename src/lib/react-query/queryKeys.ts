@@ -18,4 +18,9 @@ export enum QUERY_KEYS {
   
     //  SEARCH KEYS
     SEARCH_POSTS = "getSearchPosts",
+
+    // DOG KEYS
+    GET_DOGS = "getDogs",
+    GET_USER_DOGS = "getUserDogs",
+    GET_DOG_BY_ID = "getDogById",
   }

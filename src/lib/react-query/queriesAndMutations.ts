@@ -8,8 +8,8 @@ import {
     useQueryClient,
     useInfiniteQuery,
 } from '@tanstack/react-query'
-import { INewPost, INewUser, IUpdatePost } from '@/types'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, likePost, savePost, searchPosts, signInAccount, signOutAccount, updatePost } from '../appwrite/api'
+import { INewDog, INewPost, INewUser, IUpdateDog, IUpdatePost } from '@/types'
+import { createDog, createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, likePost, savePost, searchPosts, signInAccount, signOutAccount, updateDog, updatePost } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -199,5 +199,32 @@ export const useSearchPosts = ( searchTerm: string ) => {
         queryKey: [QUERY_KEYS.SEARCH_POSTS, searchTerm],
         queryFn: () => searchPosts(searchTerm),
         enabled: !!searchTerm
+    })
+}
+
+export const useCreateDog = () => {
+    const queryClient = useQueryClient();
+    
+    return useMutation({
+        mutationFn: (post: INewDog) => createDog(post),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_DOGS]
+            })
+        }
+    });
+}
+
+export const useUpdateDog = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (dog: IUpdateDog) => updateDog(dog),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_DOG_BY_ID, data?.$id]
+            })
+        }
+
     })
 }
