@@ -58,7 +58,7 @@ export type INewUser = {
 
 export type INewDog = {
     userId: string;
-    householdId?: string;
+    householdId: string;
     name: string;
     breed: string;
     sex: string;
@@ -69,7 +69,7 @@ export type INewDog = {
 
 export type IUpdateDog = {
     dogId: string;
-    householdId?: string;
+    householdId: string;
     name: string;
     breed: string;
     sex: string;
@@ -78,4 +78,20 @@ export type IUpdateDog = {
     file: File[];
     bio: string;
     pcciId: string;
+};
+
+export type IHousehold = {
+    householdId: string;
+    userId: string;
+    name: string;
+};
+
+export type INewHousehold = {
+    userId: string;
+    name: string;
+};
+
+export type IUpdateHousehold = {
+    householdId: string;
+    name: string;
 };

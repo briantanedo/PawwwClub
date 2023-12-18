@@ -28,10 +28,13 @@ export const PostValidation = z.object({
 export const DogValidation = z.object({
   name: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
   breed: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
-  household: z.string().min(0, { message: "Must be assigned to a household." }).max(2200, { message: "Maximum 2,200 caracters" }),
   file: z.custom<File[]>(),
-  location: z.string().min(1, { message: "This field is required" }).max(1000, { message: "Maximum 1000 characters." }),
   sex: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
   bio: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
-  pcciId: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
+  pcciId: z.string().min(0, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
+  householdId: z.string().min(1, { message: "Minimum 1 character." }).max(2200, { message: "Maximum 2,200 caracters" }),
+});
+
+export const HouseholdValidation = z.object({
+  name: z.string().min(2, { message: "Minimum 2 characters." }).max(2200, { message: "Maximum 2,200 caracters" }),
 });

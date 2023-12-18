@@ -17,10 +17,16 @@ export enum QUERY_KEYS {
     GET_FILE_PREVIEW = "getFilePreview",
   
     //  SEARCH KEYS
-    SEARCH_POSTS = "getSearchPosts",
+    SEARCH_POSTS = "searchPosts",
+    SEARCH_DOGS = "searchDogs",
 
     // DOG KEYS
     GET_DOGS = "getDogs",
     GET_USER_DOGS = "getUserDogs",
     GET_DOG_BY_ID = "getDogById",
+
+    // HOUSEHOLD KEYS
+    GET_HOUSEHOLDS = "getHouseholds",
+    GET_USER_HOUSEHOLDS = "getUserHouseholds",
+    GET_HOUSEHOLD_BY_ID = "getDogById",
   }

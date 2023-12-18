@@ -8,8 +8,8 @@ import {
     useQueryClient,
     useInfiniteQuery,
 } from '@tanstack/react-query'
-import { INewDog, INewPost, INewUser, IUpdateDog, IUpdatePost } from '@/types'
-import { createDog, createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, likePost, savePost, searchPosts, signInAccount, signOutAccount, updateDog, updatePost } from '../appwrite/api'
+import { INewDog, INewHousehold, INewPost, INewUser, IUpdateDog, IUpdateHousehold, IUpdatePost } from '@/types'
+import { createDog, createHousehold, createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, getUserById, getUserDogs, getUserPosts, likePost, savePost, searchDogs, searchPosts, signInAccount, signOutAccount, updateDog, updateHousehold, updatePost } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -206,7 +206,7 @@ export const useCreateDog = () => {
     const queryClient = useQueryClient();
     
     return useMutation({
-        mutationFn: (post: INewDog) => createDog(post),
+        mutationFn: ( dog: INewDog ) => createDog(dog),
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_USER_DOGS]
@@ -216,15 +216,73 @@ export const useCreateDog = () => {
 }
 
 export const useUpdateDog = () => {
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (dog: IUpdateDog) => updateDog(dog),
-        onSuccess: (data) => {
+        /* onSuccess: (data) => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_DOG_BY_ID, data?.$id]
             })
-        }
+        } */
 
+    })
+}
+
+export const useGetUserPosts = (userId?: string) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_USER_POSTS, userId],
+      queryFn: () => getUserPosts(userId),
+      enabled: !!userId,
+    });
+  };
+
+export const useGetUserDogs = (userId?: string) => {
+return useQuery({
+    queryKey: [QUERY_KEYS.GET_USER_DOGS, userId],
+    queryFn: () => getUserDogs(userId),
+    enabled: !!userId,
+});
+};
+
+export const useSearchDogs = ( searchTerm: string ) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.SEARCH_DOGS, searchTerm],
+        queryFn: () => searchDogs(searchTerm),
+        enabled: !!searchTerm
+    })
+}
+
+export const useGetUserById = (userId: string) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_USER_BY_ID, userId],
+      queryFn: () => getUserById(userId),
+      enabled: !!userId,
+    });
+  };
+
+export const useCreateHousehold = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (household: INewHousehold) => createHousehold(household),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_HOUSEHOLDS]
+            })
+        } 
+    })
+}
+
+export const useUpdateHousehold = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (household: IUpdateHousehold) => updateHousehold(household),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_USER_HOUSEHOLDS]
+            })
+        }
     })
 }

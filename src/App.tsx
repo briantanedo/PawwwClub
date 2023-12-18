@@ -7,6 +7,7 @@ import './globals.css';
 import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
 import { Toaster } from "@/components/ui/toaster"
+import CreateHousehold from './_root/pages/CreateHousehold';
 
 
 const App = () => {
@@ -31,6 +32,8 @@ const App = () => {
                 <Route path="/profile/:id/*" element={<Profile />} />
                 <Route path="/update-profile/:id" element={<UpdateProfile />} />
                 <Route path="/create-dog" element={<CreateDog />} />
+                <Route path="/create-household" element={<CreateHousehold />} />
+
             </Route>
         </Routes>
         

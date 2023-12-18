@@ -4,7 +4,7 @@
 
 import { ID, Query } from 'appwrite';
 
-import { INewDog, INewPost, INewUser, IUpdateDog, IUpdatePost } from "@/types";
+import { INewDog, INewHousehold, INewPost, INewUser, IUpdateDog, IUpdateHousehold, IUpdatePost } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 // ============================================================
@@ -361,6 +361,24 @@ export async function getRecentPosts({ pageParam }: { pageParam: number }) {
     }
 }
 
+export async function getUserPosts(userId?: string) {
+    if (!userId) return;
+  
+    try {
+      const post = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.postCollectionId,
+        [Query.equal("creator", userId), Query.orderDesc("$createdAt")]
+      );
+  
+      if (!post) throw Error;
+  
+      return post;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
     const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(10)]
 
@@ -421,6 +439,94 @@ export async function searchPosts(searchTerm: string) {
     }
 }
 
+export async function searchDogs(searchTerm: string) {
+    try {
+        const dogs = await databases.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.postCollectionId,
+            [Query.search('name', searchTerm)]
+        )
+
+        if(!dogs) throw Error;
+
+        return dogs;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getUserDogs(userId?: string) {
+    if (!userId) return;
+  
+    try {
+      const dogs = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.dogsCollectionId,
+        [Query.equal("owner", userId), Query.orderDesc("$createdAt")]
+      );
+  
+      if (!dogs) throw Error;
+  
+      return dogs;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  export async function getHouseholdDogs(householdId?: string) {
+    if (!householdId) return;
+  
+    try {
+      const dogs = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.dogsCollectionId,
+        [Query.equal("householdId", householdId), Query.orderDesc("$createdAt")]
+      );
+  
+      if (!dogs) throw Error;
+  
+      return dogs;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  export async function getUserHouseholds(userId?: string) {
+    if (!userId) return;
+  
+    try {
+      const households = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.householdsCollectionId,
+        [Query.equal("owner", userId), Query.orderDesc("$createdAt")]
+      );
+  
+      if (!households) throw Error;
+  
+      return households;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+// ============================== GET USER BY ID
+export async function getUserById(userId: string) {
+    try {
+      const user = await databases.getDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        userId
+      );
+  
+      if (!user) throw Error;
+  
+      return user;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
 // ============================================================
 // DOGS
 // ============================================================
@@ -434,6 +540,7 @@ export async function createDog(dog: INewDog) {
 
         // Get file url
         const fileUrl = getFilePreview(uploadedFile.$id);
+
         if(!fileUrl) {
             await deleteFile(uploadedFile.$id);
             throw Error;
@@ -449,16 +556,19 @@ export async function createDog(dog: INewDog) {
             ID.unique(),
             {
                 keyOwner: dog.userId,
-                household: dog.householdId,
+                owners: [dog.userId],
                 imageUrl: fileUrl,
                 imageId: uploadedFile.$id,
                 name: dog.name,
                 breed: dog.breed,
                 sex: dog.sex,
                 bio: dog.bio,
-                pcciId: dog.pcciId
+                pcciId: dog.pcciId,
+                household: dog.householdId
             }
         );
+
+        console.log(newDog);
 
         if(!newDog) {
             await deleteFile(uploadedFile.$id);
@@ -501,7 +611,7 @@ export async function updateDog(dog: IUpdateDog) {
         // Save post to database
         const updatedDog = await databases.updateDocument(
             appwriteConfig.databaseId,
-            appwriteConfig.postCollectionId,
+            appwriteConfig.dogsCollectionId,
             dog.dogId,
             {
                 householdId: dog.householdId,
@@ -521,6 +631,54 @@ export async function updateDog(dog: IUpdateDog) {
         }
 
         return updatedDog;
+    } catch (error) {
+      console.log(error);
+    }
+}
+
+export async function createHousehold(household: INewHousehold) {
+    try {
+        const newHousehold = await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.householdsCollectionId,
+            ID.unique(),
+            {
+                creator: household.userId,
+                name: household.name,
+                users: [household.userId]
+            }
+        );
+
+        console.log(newHousehold);
+
+        if(!newHousehold) {
+            throw Error;
+        }
+
+        return newHousehold;
+    } catch (error) {
+      console.log(error);
+    }
+}
+
+export async function updateHousehold(household: IUpdateHousehold) {
+    try {
+        
+        // Save post to database
+        const updatedHousehold = await databases.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.householdsCollectionId,
+            household.householdId,
+            {
+                name: household.name,
+            }
+        );
+
+        if(!updatedHousehold) {
+            throw Error;
+        }
+
+        return updatedHousehold;
     } catch (error) {
       console.log(error);
     }

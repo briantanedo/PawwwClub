@@ -1,7 +1,7 @@
-import DogForm from "@/components/forms/DogForm"
+import HouseholdForm from "@/components/forms/HouseholdForm";
 
-const CreateDog = () => {
-    
+const CreateHousehold = () => {
+
   return (
     <div className="flex flex-1">
       <div className="common-container">
@@ -12,14 +12,14 @@ const CreateDog = () => {
             height={36}
             alt="add" 
           />
-          <h2 className="h3-bold md:h2-bold text-left w-full">Add a Dog to your Household!</h2>
+          <h2 className="h3-bold md:h2-bold text-left w-full">Create a Household!</h2>
         </div>
 
         
-        <DogForm action="Create" /> 
+        <HouseholdForm action="Create"/>
       </div>
     </div>
   )
 }
 
-export default CreateDog
+export default CreateHousehold
