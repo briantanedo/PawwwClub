@@ -9,7 +9,7 @@ import {
     useInfiniteQuery,
 } from '@tanstack/react-query'
 import { INewDog, INewHousehold, INewPost, INewUser, IUpdateDog, IUpdateHousehold, IUpdatePost } from '@/types'
-import { createDog, createHousehold, createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, getUserById, getUserDogs, getUserPosts, likePost, savePost, searchDogs, searchPosts, signInAccount, signOutAccount, updateDog, updateHousehold, updatePost } from '../appwrite/api'
+import { createDog, createHousehold, createPost, createUserAccount, deletePost, deleteSavedPost, getCurrentUser, getInfinitePosts, getInfiniteUsers, getPostById, getRecentPosts, getUserById, getUserDogs, getUserHouseholds, getUserPosts, likePost, savePost, searchDogs, searchPosts, signInAccount, signOutAccount, updateDog, updateHousehold, updatePost } from '../appwrite/api'
 import { QUERY_KEYS } from './queryKeys'
 
 export const useCreateUserAccount = () => {
@@ -286,3 +286,11 @@ export const useUpdateHousehold = () => {
         }
     })
 }
+
+export const useGetUserHouseholds = (userId?: string) => {
+    return useQuery({
+        queryKey: [QUERY_KEYS.GET_USER_HOUSEHOLDS, userId],
+        queryFn: () => getUserHouseholds(userId),
+        enabled: !!userId,
+    });
+    };
