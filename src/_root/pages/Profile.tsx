@@ -1,15 +1,20 @@
 import GridDogList from '@/components/shared/GridDogList';
 import OrangeLoader from '@/components/shared/OrangeLoader';
+import { useUserContext } from '@/context/AuthContext';
 import { useGetUserById, useGetUserDogs } from '@/lib/react-query/queriesAndMutations';
 import { useParams } from 'react-router-dom';
 
 const Profile = () => {
   const { id } = useParams();
-  const { data: dogs } = useGetUserDogs();
+  const { user } = useUserContext();
+  const { data: dogsData } = useGetUserDogs(id);
+  const dogs = dogsData?.documents;
   
   const { data: currentUser } = useGetUserById(id || "");
 
-  console.log(currentUser);
+  const isOwnProfile = id === user.id;
+  console.log(currentUser?.pets);
+  console.log(dogs)
 
   if (!currentUser)
     return (
@@ -58,7 +63,7 @@ const Profile = () => {
 
       <div className="flex-between w-full max-w-5xl mt-16 mb-7">
         
-        <h3 className="body-bold md:h3-bold">Your Dogs</h3>
+        <h3 className="body-bold md:h3-bold">Dogs</h3>
         
         <div className="flex-center gap-3 bg-light-3 rounded-xl px-4 py-2 cursor-pointer">
           <p className="small-medium md:base-medium text-dark-2">All</p>
@@ -73,7 +78,7 @@ const Profile = () => {
       </div>
       
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-        <GridDogList dogs={currentUser.dogs}/>
+        <GridDogList dogs={currentUser.pets} showUser={!isOwnProfile}/>
       </div>
     </div>
   )

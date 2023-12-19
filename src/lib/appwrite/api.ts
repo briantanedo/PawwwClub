@@ -462,7 +462,7 @@ export async function getUserDogs(userId?: string) {
       const dogs = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.dogsCollectionId,
-        [Query.equal("owner", userId), Query.orderDesc("$createdAt")]
+        [Query.equal("keyOwner", [userId]), Query.orderDesc("$createdAt")]
       );
   
       if (!dogs) throw Error;
@@ -498,7 +498,7 @@ export async function getUserDogs(userId?: string) {
       const households = await databases.listDocuments(
         appwriteConfig.databaseId,
         appwriteConfig.householdsCollectionId,
-        [Query.equal("users", [userId]), Query.orderDesc("$createdAt")]
+        [Query.equal("creator", userId), Query.orderDesc("$createdAt")]
       );
   
       if (!households) throw Error;

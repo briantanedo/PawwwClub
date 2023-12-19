@@ -21,10 +21,15 @@ const GridDogList = ({ dogs, showUser = true, /* showStats = true */ }: GridPost
           </Link>
 
           <div className="grid-post_user text-light-1">
+            <div className="flex items-baseline justify-start gap-0 flex-1">
+              <p className="line-clamp-1 text-xl pr-2">{dog.name}</p>
+              <p className="line-clamp-1 text-xs text-light-4 italic">{dog.breed}</p>
+              <p className="line-clamp-1 text-xs text-light-4 italic">{dog.sex=='Female' ? ('♀') : ('♂')}</p>
+            </div>
             {showUser && (
               <div className="flex items-center justify-start gap-2 flex-1">
-                <img src={dog.owner.imageUrl} alt="creator" className="h-8 w-8 rounded-full"/>
-                <p className="line-clamp-1">{dog.owner.name}</p>
+                <img src={dog.keyOwner.imageUrl} alt="creator" className="h-8 w-8 rounded-full"/>
+                <p className="line-clamp-1">{dog.keyOwner.name}</p>
               </div>
             )}
             {/* {showStats && <PostStats post={post} userId={user.id}/>} */}
