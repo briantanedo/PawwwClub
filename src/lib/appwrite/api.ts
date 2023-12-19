@@ -636,6 +636,36 @@ export async function updateDog(dog: IUpdateDog) {
     }
 }
 
+export async function deleteDog(dogId:string, imageId:string) {
+    if(!dogId || !imageId) throw Error;
+
+    try {
+        await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.dogsCollectionId,
+            dogId
+        )
+
+        return { status: 'ok' }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function getDogById(dogId: string) {
+    try {
+        const dog = await databases.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.dogsCollectionId,
+            dogId
+        )
+
+        return dog;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export async function createHousehold(household: INewHousehold) {
     try {
         const newHousehold = await databases.createDocument(
@@ -681,5 +711,21 @@ export async function updateHousehold(household: IUpdateHousehold) {
         return updatedHousehold;
     } catch (error) {
       console.log(error);
+    }
+}
+
+export async function deleteHousehold(householdId:string) {
+    if(!householdId) throw Error;
+
+    try {
+        await databases.deleteDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.householdsCollectionId,
+            householdId
+        )
+
+        return { status: 'ok' }
+    } catch (error) {
+        console.log(error);
     }
 }

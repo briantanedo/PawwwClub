@@ -8,6 +8,8 @@ import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
 import { Toaster } from "@/components/ui/toaster"
 import CreateHousehold from './_root/pages/CreateHousehold';
+import DogProfile from './_root/pages/DogProfile';
+import EditHousehold from './_root/pages/EditHousehold';
 
 
 const App = () => {
@@ -33,6 +35,8 @@ const App = () => {
                 <Route path="/update-profile/:id" element={<UpdateProfile />} />
                 <Route path="/create-dog" element={<CreateDog />} />
                 <Route path="/create-household" element={<CreateHousehold />} />
+                <Route path="/update-household/:id" element={<EditHousehold />} />
+                <Route path="/dogs/:id" element={<DogProfile />} />
 
             </Route>
         </Routes>

@@ -23,6 +23,7 @@ export enum QUERY_KEYS {
     // DOG KEYS
     GET_DOGS = "getDogs",
     GET_USER_DOGS = "getUserDogs",
+    GET_HOUSEHOLD_DOGS = "getUserDogs",
     GET_DOG_BY_ID = "getDogById",
 
     // HOUSEHOLD KEYS

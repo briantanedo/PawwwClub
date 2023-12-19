@@ -10,7 +10,7 @@ import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { useToast } from "../ui/use-toast"
 import { useNavigate } from "react-router-dom"
-import { useCreateHousehold, useUpdateHousehold } from "@/lib/react-query/queriesAndMutations"
+import { useCreateHousehold, useDeleteHousehold, useGetUserById, useUpdateHousehold } from "@/lib/react-query/queriesAndMutations"
 
 type HouseholdFormProps = {
     household?: Models.Document;
@@ -25,11 +25,20 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
    const { toast } = useToast();
    const navigate = useNavigate();
 
+    const { data: currentUser } = useGetUserById(user.id || "");
+
+    const { mutateAsync: deleteHousehold, isPending: isLoadingDelete } = useDeleteHousehold();
+    const handleDeleteHousehold = () => {
+        deleteHousehold(household?.id);
+        navigate(-1);
+    };
+
     // 1. Define your form.
   const form = useForm<z.infer<typeof HouseholdValidation>>({
     resolver: zodResolver(HouseholdValidation),
     defaultValues: {
-      name: household ? household?.name : `${user.name}'s Household`,
+      name: household ? household?.name : 
+        `${user.name}'s Household ${currentUser?.households.length > 0 && currentUser?.households.length + 1}`
     }
   })
  
@@ -45,7 +54,7 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
         toast({ title: 'Please try again'})
       }
 
-      return navigate(`/households/${household.$id}`);
+      return navigate(-1);
     }
     
     console.log('submit');
@@ -63,7 +72,7 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
         })
     }
 
-    navigate("/");
+    navigate(-1);
     }
 
     return (
@@ -83,6 +92,17 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
+            <div className="flex w-full">
+              {action === 'Update' &&
+                <Button
+                    type="button"
+                    onClick={handleDeleteHousehold}
+                    className="shad-button_destructive whitespace-nowrap"
+                    disabled={isLoadingDelete || isLoadingCreate || isLoadingUpdate}>
+                    Delete Household
+                </Button>
+              }
+            </div>
             <Button 
                 type="button" 
                 className="shad-button_dark_4"
@@ -92,10 +112,11 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
             <Button 
                 type="submit"
                 className="shad-button_primary whitespace-nowrap"
-                disabled={isLoadingCreate || isLoadingUpdate}>
-                {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+                disabled={isLoadingDelete || isLoadingCreate || isLoadingUpdate}>
+                {isLoadingDelete || isLoadingCreate || isLoadingUpdate && 'Loading...'}
                 {action} Household
             </Button>
+            
         </div>
       </form>
     </Form>

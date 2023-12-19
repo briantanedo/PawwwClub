@@ -36,8 +36,12 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
         if(hasLiked) {
             newLikes = newLikes.filter((id) => id !== userId);
+            console.log("removed like");
+            console.log(checkIsLiked(likes, userId) )
         }   else {
             newLikes.push(userId);
+            console.log("added like");
+            console.log(checkIsLiked(likes, userId) )
         }
 
         setLikes(newLikes);

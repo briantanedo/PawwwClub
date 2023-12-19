@@ -32,6 +32,10 @@
     @apply text-[24px] font-bold leading-[140%] tracking-tighter;
   }
 
+  .h4-bold {
+    @apply text-[16px] font-bold leading-[140%] tracking-tighter;
+  }
+
   .base-semibold {
     @apply text-[16px] font-semibold leading-[140%] tracking-tighter;
   }
@@ -182,7 +186,7 @@
   }
 
   .profile-tab {
-    @apply flex-center gap-3 py-4 w-48 bg-dark-2  transition flex-1 xl:flex-initial;
+    @apply flex-center gap-3 py-4 w-48 bg-light-2  transition flex-1 xl:flex-initial;
   }
 
   /* Saved */
@@ -271,7 +275,11 @@
 
   /* Button */
   .shad-button_primary {
-    @apply bg-primary-500 hover:bg-primary-500 text-light-1 flex gap-2 !important;
+    @apply bg-primary-500 hover:bg-primary-600 text-light-1 flex gap-2 !important;
+  }
+
+  .shad-button_destructive {
+    @apply hover:bg-light-2 text-red flex gap-2 !important;
   }
 
   .shad-button_dark_4 {

@@ -9,7 +9,7 @@ type GridPostListProps = {
   showStats?: boolean;
 }
 
-const GridDogList = ({ dogs, showUser = true, /* showStats = true */ }: GridPostListProps) => {
+const GridDogList = ({ dogs, showUser = true /* showStats = true */ }: GridPostListProps) => {
   /* const { user } = useUserContext(); */
 
   return (

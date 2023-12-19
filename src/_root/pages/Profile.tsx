@@ -1,20 +1,37 @@
-import GridDogList from '@/components/shared/GridDogList';
-import OrangeLoader from '@/components/shared/OrangeLoader';
-import { useUserContext } from '@/context/AuthContext';
-import { useGetUserById, useGetUserDogs } from '@/lib/react-query/queriesAndMutations';
-import { useParams } from 'react-router-dom';
+import {
+  Route,
+  Routes,
+  Link,
+  Outlet,
+  useParams,
+  useLocation,
+} from "react-router-dom";
+import { LikedPosts } from "@/_root/pages";
+import { useUserContext } from "@/context/AuthContext";
+import { useGetUserById } from "@/lib/react-query/queriesAndMutations";
+import OrangeLoader from "@/components/shared/OrangeLoader";
+import { Button } from "@/components/ui/button";
+import GridPostList from "@/components/shared/GridPostList";
+import UserDogs from "./UserDogs";
+
+interface StabBlockProps {
+  value: string | number;
+  label: string;
+}
+
+const StatBlock = ({ value, label }: StabBlockProps) => (
+  <div className="flex-center gap-2">
+    <p className="small-semibold lg:body-bold text-primary-500">{value}</p>
+    <p className="small-medium lg:base-medium text-dark-3">{label}</p>
+  </div>
+);
 
 const Profile = () => {
   const { id } = useParams();
   const { user } = useUserContext();
-  const { data: dogsData } = useGetUserDogs(id);
-  const dogs = dogsData?.documents;
-  
-  const { data: currentUser } = useGetUserById(id || "");
+  const { pathname } = useLocation();
 
-  const isOwnProfile = id === user.id;
-  console.log(currentUser?.pets);
-  console.log(dogs)
+  const { data: currentUser } = useGetUserById(id || "");
 
   if (!currentUser)
     return (
@@ -23,65 +40,127 @@ const Profile = () => {
       </div>
     );
 
-  /* const [searchValue, setSearchValue] = useState("");
-  const debouncedSearch = useDebounce(searchValue, 500);
-  const { data :searchedPosts, isFetching: isSearchFetching } = useSearchDogs(debouncedSearch);
- */
-
-  if(!dogs) {
-    console.log('no dogs');
-    return (
-      <div className="flex-center w-full h-full">
-        <p className="text-light-4 mt-10 text-center w-full">User has no dogs</p>
-      </div>
-    )
-  }
-
-  /* const shouldShowSearchResults = searchValue !== "";
-  const shouldShowDogs = !shouldShowSearchResults && dogs.pages.every((item) => item?.documents.length === 0)
- */
   return (
-    <div className="explore-container">
-      <h2 className="h3-bold md:h2-bold w-full">{currentUser.name}</h2>
-      {/* <div className="explore-inner_container">
-        <div className="flex gap-1 px-4 w-full rounded-lg bg-light-2">
-          <img 
-            src="/assets/icons/search.svg" 
-            width={24}
-            height={24}
-            alt="search" 
+    <div className="profile-container">
+      <div className="profile-inner_container">
+        <div className="flex xl:flex-row flex-col max-xl:items-center flex-1 gap-7">
+          <img
+            src={
+              currentUser.imageUrl || "/assets/icons/profile-placeholder.svg"
+            }
+            alt="profile"
+            className="w-28 h-28 lg:h-36 lg:w-36 rounded-full"
           />
-          <Input 
-            type="text"
-            placeholder="Search"
-            className="explore-search"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
-        </div>
-      </div> */}
+          <div className="flex flex-col flex-1 justify-between md:mt-2">
+            <div className="flex flex-col w-full">
+              <h1 className="text-center xl:text-left h3-bold md:h1-semibold w-full">
+                {currentUser.name}
+              </h1>
+              <p className="small-regular md:body-medium text-dark-4 text-center xl:text-left">
+                @{currentUser.username}
+              </p>
+            </div>
 
-      <div className="flex-between w-full max-w-5xl mt-16 mb-7">
-        
-        <h3 className="body-bold md:h3-bold">Dogs</h3>
-        
-        <div className="flex-center gap-3 bg-light-3 rounded-xl px-4 py-2 cursor-pointer">
-          <p className="small-medium md:base-medium text-dark-2">All</p>
+            <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
+              <StatBlock value={currentUser.posts.length} label="Posts" />
+              <StatBlock value={20} label="Followers" />
+              <StatBlock value={20} label="Following" />
+            </div>
 
-          <img 
-            src="/assets/icons/filter.svg" 
-            alt="filter"
-            width={20}
-            height={20}
-          />
+            <p className="small-medium md:base-medium text-center xl:text-left mt-7 max-w-screen-sm">
+              {currentUser.bio}
+            </p>
+          </div>
+
+          <div className="flex justify-center gap-4">
+            <div className={`${user.id !== currentUser.$id && "hidden"}`}>
+              <Link
+                to={`/update-profile/${currentUser.$id}`}
+                className={`h-12 bg-light-2 px-5 text-dark-1 flex-center gap-2 rounded-lg ${
+                  user.id !== currentUser.$id && "hidden"
+                }`}>
+                <img
+                  src={"/assets/icons/edit.svg"}
+                  alt="edit"
+                  width={20}
+                  height={20}
+                />
+                <p className="flex whitespace-nowrap small-medium">
+                  Edit Profile
+                </p>
+              </Link>
+            </div>
+            <div className={`${user.id === id && "hidden"}`}>
+              <Button type="button" className="shad-button_primary px-8">
+                Follow
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-        <GridDogList dogs={currentUser.pets} showUser={!isOwnProfile}/>
-      </div>
+
+      {currentUser.$id === user.id && (
+        <div className="flex max-w-5xl w-full">
+          <Link
+            to={`/profile/${id}`}
+            className={`profile-tab rounded-l-lg ${
+              pathname === `/profile/${id}` && "!bg-light-3"
+            }`}>
+            <img
+              src={"/assets/icons/posts.svg"}
+              alt="posts"
+              width={20}
+              height={20}
+            />
+            Posts
+          </Link>
+          <Link
+            to={`/profile/${id}/dogs`}
+            className={`profile-tab ${
+              pathname === `/profile/${id}/dogs` && "!bg-light-3"
+            }`}>
+            <img
+              src={"/assets/icons/dog.svg"}
+              alt="dogs"
+              width={20}
+              height={20}
+            />
+            Dogs
+          </Link>
+          <Link
+            to={`/profile/${id}/liked-posts`}
+            className={`profile-tab rounded-r-lg ${
+              pathname === `/profile/${id}/liked-posts` && "!bg-light-3"
+            }`}>
+            <img
+              src={"/assets/icons/like.svg"}
+              alt="like"
+              width={20}
+              height={20}
+            />
+            Liked Posts
+          </Link>
+        </div>
+      )}
+
+      <Routes>
+        
+        <Route
+          index
+          element={<GridPostList posts={currentUser.posts} showUser={false} />}
+        />
+        <Route
+          path="/dogs"
+          element={<UserDogs userId={currentUser.$id} showUser={false}/>}
+        />
+        {currentUser.$id === user.id && (
+          <Route path="/liked-posts" element={<LikedPosts />} />
+        )}
+      </Routes>
+
+      <Outlet />
     </div>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
