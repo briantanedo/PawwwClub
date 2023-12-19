@@ -27,11 +27,6 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
 
     const { data: currentUser } = useGetUserById(user.id || "");
 
-    const { mutateAsync: deleteHousehold, isPending: isLoadingDelete } = useDeleteHousehold();
-    const handleDeleteHousehold = () => {
-        deleteHousehold(household?.id);
-        navigate(-1);
-    };
 
     // 1. Define your form.
   const form = useForm<z.infer<typeof HouseholdValidation>>({
@@ -92,17 +87,6 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-            <div className="flex w-full">
-              {action === 'Update' &&
-                <Button
-                    type="button"
-                    onClick={handleDeleteHousehold}
-                    className="shad-button_destructive whitespace-nowrap"
-                    disabled={isLoadingDelete || isLoadingCreate || isLoadingUpdate}>
-                    Delete Household
-                </Button>
-              }
-            </div>
             <Button 
                 type="button" 
                 className="shad-button_dark_4"
@@ -112,8 +96,8 @@ const HouseholdForm = ({ household, action }: HouseholdFormProps) => {
             <Button 
                 type="submit"
                 className="shad-button_primary whitespace-nowrap"
-                disabled={isLoadingDelete || isLoadingCreate || isLoadingUpdate}>
-                {isLoadingDelete || isLoadingCreate || isLoadingUpdate && 'Loading...'}
+                disabled={ isLoadingCreate || isLoadingUpdate}>
+                { isLoadingCreate || isLoadingUpdate && 'Loading...'}
                 {action} Household
             </Button>
             

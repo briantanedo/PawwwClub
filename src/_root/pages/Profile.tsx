@@ -60,8 +60,8 @@ const Profile = () => {
                 @{currentUser.username}
               </p>
             </div>
-
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
+              <StatBlock value={currentUser.pets.length} label="Dogs" />
               <StatBlock value={currentUser.posts.length} label="Posts" />
               <StatBlock value={20} label="Followers" />
               <StatBlock value={20} label="Following" />
@@ -98,8 +98,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
-      {currentUser.$id === user.id && (
         <div className="flex max-w-5xl w-full">
           <Link
             to={`/profile/${id}`}
@@ -116,9 +114,10 @@ const Profile = () => {
           </Link>
           <Link
             to={`/profile/${id}/dogs`}
-            className={`profile-tab ${
-              pathname === `/profile/${id}/dogs` && "!bg-light-3"
-            }`}>
+            className={`profile-tab 
+              ${currentUser.$id !== user.id && "!rounded-r-lg"} 
+              ${pathname === `/profile/${id}/dogs` && "!bg-light-3"}
+            `}>
             <img
               src={"/assets/icons/dog.svg"}
               alt="dogs"
@@ -127,6 +126,7 @@ const Profile = () => {
             />
             Dogs
           </Link>
+          {currentUser.$id === user.id && (
           <Link
             to={`/profile/${id}/liked-posts`}
             className={`profile-tab rounded-r-lg ${
@@ -140,8 +140,8 @@ const Profile = () => {
             />
             Liked Posts
           </Link>
+          )}
         </div>
-      )}
 
       <Routes>
         
