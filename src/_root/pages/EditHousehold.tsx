@@ -1,6 +1,6 @@
 import HouseholdForm from "@/components/forms/HouseholdForm";
 import { Button } from "@/components/ui/button";
-import { useDeleteHousehold, useDeletePost } from "@/lib/react-query/queriesAndMutations";
+import { useDeleteHousehold } from "@/lib/react-query/queriesAndMutations";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EditHousehold = () => {

@@ -28,6 +28,7 @@ export type INewPost = {
     file: File[];
     location?: string;
     tags?: string;
+    dogIds?: string;
 };
 
 export type IUpdatePost = {
@@ -38,6 +39,7 @@ export type IUpdatePost = {
     file: File[];
     location?: string;
     tags?: string;
+    dogIds?: string;
 };
 
 export type IUser = {

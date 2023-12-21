@@ -31,13 +31,13 @@ import {
   getDogById,
   getHouseholdDogs,
   getInfinitePosts,
-  getInfiniteUsers,
   getPostById,
   getRecentPosts,
   getUserById,
   getUserDogs,
   getUserHouseholds,
   getUserPosts,
+  getUsers,
   likePost,
   savePost,
   searchDogs,
@@ -222,20 +222,12 @@ export const useGetPosts = () => {
   });
 };
 
-export const useGetUsers = () => {
-  return useInfiniteQuery({
-    queryKey: [QUERY_KEYS.GET_INFINITE_USERS],
-    queryFn: getInfiniteUsers as any,
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage: any) => {
-      if (lastPage && lastPage.documents.length === 0) return null;
-
-      const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
-
-      return lastId;
-    },
-  });
-};
+export const useGetUsers = (limit?: number) => {
+    return useQuery({
+      queryKey: [QUERY_KEYS.GET_USERS],
+      queryFn: () => getUsers(limit),
+    });
+  };
 
 export const useSearchPosts = (searchTerm: string) => {
   return useQuery({

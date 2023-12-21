@@ -2,7 +2,7 @@
 // They connect the website to appwrite and allows us to get/post to the appwrite database
 // These functions are consumed by ReactQuery in /react-query/queriesAndMutations.ts
 
-import { ID, Query } from 'appwrite';
+import { ID, Models, Query } from 'appwrite';
 
 import { INewDog, INewHousehold, INewPost, INewUser, IUpdateDog, IUpdateHousehold, IUpdatePost, IUpdateUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from './config';
@@ -123,6 +123,10 @@ export async function createPost(post: INewPost) {
         // Convert tags in an array
         const tags = post.tags?.replace(/ /g,'').split(',') || [];
 
+        // Convert dogIds string to array of dog documents
+        const dogIds = post.dogIds?.split(',') || [];
+        const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
+
         // Save post to database
         const newPost = await databases.createDocument(
             appwriteConfig.databaseId,
@@ -134,7 +138,8 @@ export async function createPost(post: INewPost) {
                 imageUrl: fileUrl,
                 imageId: uploadedFile.$id,
                 location: post.location,
-                tags: tags
+                tags: tags,
+                dogs: dogs
             }
         );
 
@@ -176,6 +181,11 @@ export async function updatePost(post: IUpdatePost) {
         // Convert tags in an array
         const tags = post.tags?.replace(/ /g,'').split(',') || [];
 
+        // Convert dogIds string to array of dog documents
+        const dogIds = post.dogIds?.replace(/ /g,'').split(',') || [];
+        const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
+
+
         // Save post to database
         const updatedPost = await databases.updateDocument(
             appwriteConfig.databaseId,
@@ -186,7 +196,8 @@ export async function updatePost(post: IUpdatePost) {
                 imageUrl: image.imageUrl,
                 imageId: image.imageId,
                 location: post.location,
-                tags: tags
+                tags: tags,
+                dogs: dogs
             }
         );
 
@@ -400,6 +411,28 @@ export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
         console.log(error);
     }
 }
+
+export async function getUsers(limit?: number) {
+    const queries: any[] = [Query.orderDesc("$createdAt")];
+  
+    if (limit) {
+      queries.push(Query.limit(limit));
+    }
+  
+    try {
+      const users = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        queries
+      );
+  
+      if (!users) throw Error;
+  
+      return users;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
 export async function getInfiniteUsers({ pageParam }: { pageParam: number }) {
     const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(10)]
@@ -663,6 +696,8 @@ export async function getDogById(dogId: string) {
         return dog;
     } catch (error) {
         console.log(error);
+        const dog={} as Models.Document
+        return dog;
     }
 }
 

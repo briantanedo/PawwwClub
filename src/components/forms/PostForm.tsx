@@ -12,7 +12,14 @@ import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { useToast } from "../ui/use-toast"
 import { useNavigate } from "react-router-dom"
-import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations"
+import { useCreatePost, useGetUserDogs, useUpdatePost } from "@/lib/react-query/queriesAndMutations"
+import OrangeLoader from "../shared/OrangeLoader"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
+import { cn } from "@/lib/utils"
+import { Check } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command"
+import { useState } from "react"
+import DogTag from "../shared/DogTag"
 
 type PostFormProps = {
     post?: Models.Document;
@@ -23,18 +30,29 @@ const PostForm = ({ post, action }: PostFormProps) => {
    const { mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
    const { mutateAsync: updatePost, isPending: isLoadingUpdate } = useUpdatePost();
 
+
    const { user } = useUserContext();
    const { toast } = useToast();
    const navigate = useNavigate();
+
+   const { data: userDogsData, isPending: isUserDogsLoading } = useGetUserDogs(user.id);
+
+  const userDogs = userDogsData;
+
+  //convert post.dogs DocumentList to string
+
+  const [postDogs, setPostDogs] = useState<string>(`${post?.dogs ? (post?.dogs.map((dog: Models.Document)=>(dog.$id))).join(',') : ''}`);
+  console.log(postDogs)
 
     // 1. Define your form.
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
-      caption: post ? post?.caption : "",
+      caption: post ? post.caption : "",
       file: [],
-      location: post ? post?.location : "",
+      location: post ? post.location : "",
       tags: post ? post.tags.join(',') : '',
+      dogIds: post ? postDogs : ''
     },
   })
  
@@ -124,6 +142,100 @@ const PostForm = ({ post, action }: PostFormProps) => {
                 <Input type = "text" className="shad-input" placeholder="Art, Expression, Learn" {...field}/>
               </FormControl>
               <FormMessage className="shad-form_message"/>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="dogIds"
+          render={({ field }) => (
+            <FormItem>
+              {isUserDogsLoading ? (
+                <OrangeLoader />
+              ) : (
+                <Popover>
+                  <div className="flex flex-row flex-start">
+                    <FormLabel className="shad-form_label pr-2">Dogs</FormLabel>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="justify-between border border-primary-500 bg-light-1 text-primary-500"
+                        >
+                          {"+ Add dogs"}
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                  </div>
+                  <ul className="flex flex-start gap-2">
+
+                    {postDogs
+                      ? postDogs.split(',').map(
+                        (dogId:string) => (
+                          <li key={dogId} className="w-[160px] flex flex-row bg-light-1 drop-shadow border border-light-2 rounded-md ">
+                            <DogTag key={dogId} dog={userDogs?.documents.find(
+                              (userDog) => (
+                                userDog.$id === dogId
+                              )
+                            )!}/>
+                            <Button 
+                            variant="destructive"
+                            className="text-light-4 hover:text-red z-20 px-1.5 py-2.5 h-4"
+                            onClick={() => {
+
+                              if(postDogs.includes(dogId)) {
+                                setPostDogs(postDogs.replace(`,${dogId}`, "").replace(`${dogId},`, "").replace(`${dogId}`, "").replaceAll(",,",","));
+                                form.setValue("dogIds", postDogs);
+                              } else {
+                                setPostDogs(postDogs=='' ? dogId : postDogs.concat(",",dogId).replaceAll(",,",","))
+                                form.setValue("dogIds", postDogs);
+                              }
+                            }}>
+                              x
+                            </Button>
+                          </li>
+                        ))
+                      : <></>}
+                  </ul>
+                  <PopoverContent className="flex w-full p-0 justify-between bg-light-1">
+                    <Command>
+                      <CommandInput placeholder="Search dog..." />
+                      <CommandEmpty>No dogs found.</CommandEmpty>
+                      <CommandGroup>
+                        {userDogs?.documents.map((userDog) => (
+                          <CommandItem
+                            value={userDog.name}
+                            key={userDog.$id}
+                            className="hover:bg-light-2"
+                            onSelect={() => {
+
+                              if(postDogs.includes(userDog.$id)) {
+                                setPostDogs(postDogs.replace(`,${userDog.$id}`, "").replace(`${userDog.$id},`, "").replace(`${userDog.$id}`, "").replaceAll(",,",","));
+                                form.setValue("dogIds", postDogs);
+                              } else {
+                                setPostDogs(postDogs=='' ? userDog.$id : postDogs.concat(",",userDog.$id).replaceAll(",,",","))
+                                form.setValue("dogIds", postDogs);
+                              }
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                postDogs.includes(userDog.$id)
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              )}
+                            />
+                            {userDog.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
+              <FormMessage className="shad-form_message" />
             </FormItem>
           )}
         />
