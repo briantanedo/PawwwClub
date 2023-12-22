@@ -1,30 +1,26 @@
-# React + TypeScript + Vite
+# PawwwClub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+At Pawww.Club, our mission is to revolutionize the dog breeding and ownership experience. We aim to be the definitive hub for dog enthusiasts, connecting them with reputable breeders and trainers. Our commitment is to facilitate responsible breeding, provide a secure platform for transactions, and foster a community where the well-being of every dog is our top priority.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### To Do:
 
-## Expanding the ESLint configuration
+- [ ]  Dog Profile Page
+- [ ]  Dog Search
+    - [ ]  Get list of dog breeds
+    - [ ]  FIx Dog Attributes
+- [ ]  Follow
+- [ ]  Listings (Post Types)
+- [ ]  Facebook/Google OAuth2
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Broken (things idk how to fix):
 
-- Configure the top-level `parserOptions` property like this:
+- [ ]  Likes
+- [ ]  Update Post
+- [ ]  z-indexes are off (e.g. hover cards not on top)
+- [ ]  GitHub Pages (web distribution in general)
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+### Finished
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- [x]  Basic Features (See GitHub)
