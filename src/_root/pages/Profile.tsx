@@ -14,12 +14,12 @@ import { Button } from "@/components/ui/button";
 import GridPostList from "@/components/shared/GridPostList";
 import UserDogs from "./UserDogs";
 
-interface StabBlockProps {
+interface StatBlockProps {
   value: string | number;
   label: string;
 }
 
-const StatBlock = ({ value, label }: StabBlockProps) => (
+const StatBlock = ({ value, label }: StatBlockProps) => (
   <div className="flex-center gap-2">
     <p className="small-semibold lg:body-bold text-primary-500">{value}</p>
     <p className="small-medium lg:base-medium text-dark-3">{label}</p>
@@ -98,50 +98,50 @@ const Profile = () => {
           </div>
         </div>
       </div>
-        <div className="flex max-w-5xl w-full">
-          <Link
-            to={`/profile/${id}`}
-            className={`profile-tab rounded-l-lg ${
-              pathname === `/profile/${id}` && "!bg-light-3"
-            }`}>
-            <img
-              src={"/assets/icons/posts.svg"}
-              alt="posts"
-              width={20}
-              height={20}
-            />
-            Posts
-          </Link>
-          <Link
-            to={`/profile/${id}/dogs`}
-            className={`profile-tab 
-              ${currentUser.$id !== user.id && "!rounded-r-lg"} 
-              ${pathname === `/profile/${id}/dogs` && "!bg-light-3"}
-            `}>
-            <img
-              src={"/assets/icons/dog.svg"}
-              alt="dogs"
-              width={20}
-              height={20}
-            />
-            Dogs
-          </Link>
-          {currentUser.$id === user.id && (
-          <Link
-            to={`/profile/${id}/liked-posts`}
-            className={`profile-tab rounded-r-lg ${
-              pathname === `/profile/${id}/liked-posts` && "!bg-light-3"
-            }`}>
-            <img
-              src={"/assets/icons/like.svg"}
-              alt="like"
-              width={20}
-              height={20}
-            />
-            Liked Posts
-          </Link>
-          )}
-        </div>
+      <div className="flex max-w-5xl w-full">
+        <Link
+          to={`/profile/${id}`}
+          className={`profile-tab rounded-l-lg ${
+            pathname === `/profile/${id}` && "!bg-light-3"
+          }`}>
+          <img
+            src={"/assets/icons/posts.svg"}
+            alt="posts"
+            width={20}
+            height={20}
+          />
+          Posts
+        </Link>
+        <Link
+          to={`/profile/${id}/dogs`}
+          className={`profile-tab 
+            ${currentUser.$id !== user.id && "!rounded-r-lg"} 
+            ${pathname === `/profile/${id}/dogs` && "!bg-light-3"}
+          `}>
+          <img
+            src={"/assets/icons/dog.svg"}
+            alt="dogs"
+            width={20}
+            height={20}
+          />
+          Dogs
+        </Link>
+        {currentUser.$id === user.id && (
+        <Link
+          to={`/profile/${id}/liked-posts`}
+          className={`profile-tab rounded-r-lg ${
+            pathname === `/profile/${id}/liked-posts` && "!bg-light-3"
+          }`}>
+          <img
+            src={"/assets/icons/like.svg"}
+            alt="like"
+            width={20}
+            height={20}
+          />
+          Liked Posts
+        </Link>
+        )}
+      </div>
 
       <Routes>
         

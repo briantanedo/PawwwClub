@@ -123,11 +123,14 @@ export async function createPost(post: INewPost) {
         // Convert tags in an array
         const tags = post.tags?.replace(/ /g,'').split(',') || [];
 
+        const dogs = post.dogIds?.split(',') || [];
         // Convert dogIds string to array of dog documents
-        const dogIds = post.dogIds?.split(',') || [];
-        const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
+        // const dogIds = post.dogIds?.split(',') || [];
+        // const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
 
         // Save post to database
+        
+        console.log(post)
         const newPost = await databases.createDocument(
             appwriteConfig.databaseId,
             appwriteConfig.postCollectionId,
@@ -180,11 +183,18 @@ export async function updatePost(post: IUpdatePost) {
 
         // Convert tags in an array
         const tags = post.tags?.replace(/ /g,'').split(',') || [];
+        
+        const dogs = post.dogIds?.split(',') || [];
 
         // Convert dogIds string to array of dog documents
-        const dogIds = post.dogIds?.replace(/ /g,'').split(',') || [];
-        const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
+        // const dogIds = post.dogIds?.replace(/ /g,'').split(',') || [];
+        // const dogs = dogIds?.map((dogId) => (getDogById(dogId)))
 
+
+        console.log("update attempt start")
+        console.log(dogs)
+
+        console.log(post)
 
         // Save post to database
         const updatedPost = await databases.updateDocument(
@@ -200,7 +210,7 @@ export async function updatePost(post: IUpdatePost) {
                 dogs: dogs
             }
         );
-
+            console.log("update attempt done")
         if(!updatedPost) {
             await deleteFile(post.imageId);
             throw Error;
@@ -323,6 +333,8 @@ export async function deletePost(postId:string, imageId:string) {
             appwriteConfig.postCollectionId,
             postId
         )
+
+        await deleteFile(imageId);
 
         return { status: 'ok' }
     } catch (error) {

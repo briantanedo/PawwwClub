@@ -3,6 +3,7 @@ import { multiFormatDateString } from "@/lib/utils";
 import { Models } from "appwrite";
 import { Link } from "react-router-dom";
 import PostStats from "./PostStats";
+import DogTag from "./DogTag";
 
 type PostCardProps = {
     post: Models.Document;
@@ -10,8 +11,6 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps) => {
     const { user } = useUserContext();
-
-    console.log(post);
 
     if(!post.creator) return;
 
@@ -23,7 +22,7 @@ const PostCard = ({ post }: PostCardProps) => {
                     <img 
                     src={post?.creator?.imageUrl || '/assets/icons/profile-placeholder.svg'} 
                     alt="creator" 
-                    className="rounded-full w-12 h-12"
+                    className="rounded-full w-10 h-10"
                     />
                 </Link>
                 <div className="flex flex-col">
@@ -61,11 +60,27 @@ const PostCard = ({ post }: PostCardProps) => {
                     ))}
                 </ul>
             </div>
+            
             <img 
                 src={post.imageUrl || '/assets/icons/profile-placeholder.svg'} 
                 alt="post image" 
                 className="post-card_img"/>
         </Link>
+        {post.dogs.length > 0 ? 
+        <div>
+            <p className="small-medium">Featured Dogs:</p>
+            <ul className="flex flex-start gap-2 py-2 pb-4">
+                {post.dogs
+                    ? post.dogs.map(
+                    (dog:Models.Document) => (
+                        <DogTag key={dog.$id} dog={dog}/>
+                    ))
+                : <></>}
+            </ul>
+        </div>
+        :
+        <></>
+        }
 
         <PostStats post={post} userId={user.id} />
     </div>

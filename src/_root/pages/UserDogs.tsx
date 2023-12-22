@@ -1,5 +1,6 @@
 import GridDogList from '@/components/shared/GridDogList';
 import OrangeLoader from '@/components/shared/OrangeLoader';
+import { useUserContext } from '@/context/AuthContext';
 import { useGetUserById, useGetUserDogs, useGetUserHouseholds } from '@/lib/react-query/queriesAndMutations';
 import { Link } from 'react-router-dom';
 
@@ -9,6 +10,7 @@ type UserDogsProps = {
   }
 
 const UserDogs = ({ userId, showUser = true}: UserDogsProps) => {
+    const { user } = useUserContext();
     const { data: currentUser } = useGetUserById(userId || "");
 
     if (!currentUser)
@@ -32,8 +34,8 @@ const UserDogs = ({ userId, showUser = true}: UserDogsProps) => {
   return (
     <div className="w-full h-full">
       <div className="flex-between w-full max-w-5xl mb-2">
-        <div className="flex flex-col gap-2 items-baseline">
-            <div className="flex flex-row flex-between w-full max-w-5xl mb-2">
+        <div className="flex flex-col w-full gap-2 items-baseline">
+            <div className="flex flex-row flex-center w-full max-w-5xl mb-2">
                 <h3 className="flex body-bold h2-bold w-full">{currentUser.name}'s Dogs</h3>
                 <div className="flex flex-center gap-3 bg-light-3 rounded-xl px-4 py-2 cursor-pointer">
                 <p className="small-medium md:base-medium text-dark-2">All</p>
@@ -46,6 +48,7 @@ const UserDogs = ({ userId, showUser = true}: UserDogsProps) => {
                 />
                 </div>
             </div>
+            {user.id === userId ?
             <div className="flex flex-wrap gap-2">
                 <Link to="/create-household/" className="text-primary-500 hover:bg-light-2 p-1 border-[1px] border-primary-500 rounded-xl">
                     Create Household
@@ -54,6 +57,9 @@ const UserDogs = ({ userId, showUser = true}: UserDogsProps) => {
                     Add Dog
                 </Link>
             </div>
+            :
+            <></>
+            }
         </div>
         
         
@@ -67,7 +73,7 @@ const UserDogs = ({ userId, showUser = true}: UserDogsProps) => {
                 <div className="flex-center content-end">
                     <Link
                         to={`/update-household/${household.$id}`}
-                        className={`${userId !== household.creator.$id && "hidden"}`}
+                        className={`${user.id !== household.creator.$id && "hidden"}`}
                     >
                         <img
                             src="/assets/icons/edit.svg"

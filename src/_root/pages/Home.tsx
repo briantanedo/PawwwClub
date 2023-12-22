@@ -1,3 +1,4 @@
+import CreatePostCard from "@/components/shared/CreatePostCard";
 import OrangeLoader from "@/components/shared/OrangeLoader";
 import PostCardList from "@/components/shared/PostCardList";
 import { useGetRecentPosts } from "@/lib/react-query/queriesAndMutations";
@@ -16,6 +17,7 @@ const Home = () => {
     <div className="flex flex-1">
       <div className="home-container">
         <div className="home-posts">
+          <CreatePostCard />
           <h2 className="h3-bold md:h2-bold text-left w-full">Home Feed</h2>
           {isPostLoading && !posts ? (
             <OrangeLoader />

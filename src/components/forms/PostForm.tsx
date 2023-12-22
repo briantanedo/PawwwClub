@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { cn } from "@/lib/utils"
 import { Check } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "../ui/command"
-import { useState } from "react"
 import DogTag from "../shared/DogTag"
 
 type PostFormProps = {
@@ -39,12 +38,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
 
   const userDogs = userDogsData;
 
-  //convert post.dogs DocumentList to string
-
-  const [postDogs, setPostDogs] = useState<string>(`${post?.dogs ? (post?.dogs.map((dog: Models.Document)=>(dog.$id))).join(',') : ''}`);
-  console.log(postDogs)
-
-    // 1. Define your form.
+  
+  // 1. Define your form.
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
@@ -52,10 +47,11 @@ const PostForm = ({ post, action }: PostFormProps) => {
       file: [],
       location: post ? post.location : "",
       tags: post ? post.tags.join(',') : '',
-      dogIds: post ? postDogs : ''
+      dogIds: post ? (post?.dogs.map((dog: Models.Document)=>(dog.$id))).join(',') : '',
     },
   })
- 
+  //convert post.dogs DocumentList to string
+  
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof PostValidation>) {
     if(post && action === 'Update') {
@@ -83,8 +79,8 @@ const PostForm = ({ post, action }: PostFormProps) => {
             title: 'Please try again',
         })
     }
-
-    navigate("/");
+    location.reload()
+    //navigate("/");
   }
 
   return (
@@ -95,9 +91,13 @@ const PostForm = ({ post, action }: PostFormProps) => {
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">{/* Caption */}</FormLabel>
               <FormControl>
-                <Textarea className="shad-textarea custom-scrollbar" {...field} />
+                <Textarea 
+                  className="shad-textarea custom-scrollbar focus-visible:ring-transparent" 
+                  placeholder="Write a caption..."
+                  {...field} 
+                />
               </FormControl>
               <FormMessage className="shad-form_message"/>
             </FormItem>
@@ -155,7 +155,7 @@ const PostForm = ({ post, action }: PostFormProps) => {
               ) : (
                 <Popover>
                   <div className="flex flex-row flex-start">
-                    <FormLabel className="shad-form_label pr-2">Dogs</FormLabel>
+                    <FormLabel className="shad-form_label pr-2">Featured Dogs</FormLabel>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -163,15 +163,15 @@ const PostForm = ({ post, action }: PostFormProps) => {
                           role="combobox"
                           className="justify-between border border-primary-500 bg-light-1 text-primary-500"
                         >
-                          {"+ Add dogs"}
+                          + Add Dogs
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                   </div>
                   <ul className="flex flex-start gap-2">
 
-                    {postDogs
-                      ? postDogs.split(',').map(
+                    {field.value
+                      ? field.value.split(',').map(
                         (dogId:string) => (
                           <li key={dogId} className="w-[160px] flex flex-row bg-light-1 drop-shadow border border-light-2 rounded-md ">
                             <DogTag key={dogId} dog={userDogs?.documents.find(
@@ -181,18 +181,16 @@ const PostForm = ({ post, action }: PostFormProps) => {
                             )!}/>
                             <Button 
                             variant="destructive"
-                            className="text-light-4 hover:text-red z-20 px-1.5 py-2.5 h-4"
+                            className="text-light-4 hover:text-red z-20 px-1.5 py-3 h-4"
                             onClick={() => {
 
-                              if(postDogs.includes(dogId)) {
-                                setPostDogs(postDogs.replace(`,${dogId}`, "").replace(`${dogId},`, "").replace(`${dogId}`, "").replaceAll(",,",","));
-                                form.setValue("dogIds", postDogs);
+                              if(field.value.includes(dogId)) {
+                                form.setValue("dogIds", field.value.replace(`,${dogId}`, "").replace(`${dogId},`, "").replace(`${dogId}`, "").replaceAll(",,",","));
                               } else {
-                                setPostDogs(postDogs=='' ? dogId : postDogs.concat(",",dogId).replaceAll(",,",","))
-                                form.setValue("dogIds", postDogs);
+                                form.setValue("dogIds", field.value=='' ? dogId : field.value.concat(",",dogId).replaceAll(",,",","));
                               }
                             }}>
-                              x
+                              ✕
                             </Button>
                           </li>
                         ))
@@ -210,19 +208,17 @@ const PostForm = ({ post, action }: PostFormProps) => {
                             className="hover:bg-light-2"
                             onSelect={() => {
 
-                              if(postDogs.includes(userDog.$id)) {
-                                setPostDogs(postDogs.replace(`,${userDog.$id}`, "").replace(`${userDog.$id},`, "").replace(`${userDog.$id}`, "").replaceAll(",,",","));
-                                form.setValue("dogIds", postDogs);
+                              if(field.value.includes(userDog.$id)) {
+                                form.setValue("dogIds", field.value.replace(`,${userDog.$id}`, "").replace(`${userDog.$id},`, "").replace(`${userDog.$id}`, "").replaceAll(",,",","));
                               } else {
-                                setPostDogs(postDogs=='' ? userDog.$id : postDogs.concat(",",userDog.$id).replaceAll(",,",","))
-                                form.setValue("dogIds", postDogs);
+                                form.setValue("dogIds", field.value=='' ? userDog.$id : field.value.concat(",",userDog.$id).replaceAll(",,",","));
                               }
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                postDogs.includes(userDog.$id)
+                                field.value.includes(userDog.$id)
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
@@ -240,12 +236,12 @@ const PostForm = ({ post, action }: PostFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-            <Button 
+            {/* <Button 
                 type="button" 
                 className="shad-button_dark_4"
-                onClick={() => navigate(-1)}>
+                onClick={() => navigate(0)}>
                 Cancel
-            </Button>
+            </Button> */}
             <Button 
                 type="submit"
                 className="shad-button_primary whitespace-nowrap"

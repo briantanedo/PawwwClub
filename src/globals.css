@@ -236,7 +236,7 @@
 
   /* Post Card */
   .post-card {
-    @apply bg-light-1 rounded-3xl border drop-shadow p-5 lg:p-7 w-full max-w-screen-sm;
+    @apply bg-light-1 rounded-2xl border drop-shadow p-5 lg:p-7 w-full max-w-screen-sm;
   }
 
   .post-card_img {
@@ -270,7 +270,7 @@
   }
 
   .shad-textarea {
-    @apply h-36 bg-light-2 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-primary-500 !important;
+    @apply min-h-[64px] bg-light-1 rounded-xl border-none /* focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-primary-500 */ !important;
   }
 
   /* Button */

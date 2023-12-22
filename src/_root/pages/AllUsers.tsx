@@ -24,7 +24,7 @@ const AllUsers = () => {
           <ul className="user-grid">
             {users?.documents.map((user) => (
               <li key={user?.$id} className="flex-1 min-w-[200px] w-full  ">
-                <UserCard user={user} />
+                <UserCard currentUser={user} />
               </li>
             ))}
           </ul>

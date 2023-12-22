@@ -36,7 +36,7 @@ const App = () => {
                 <Route path="/create-dog" element={<CreateDog />} />
                 <Route path="/create-household" element={<CreateHousehold />} />
                 <Route path="/update-household/:id" element={<EditHousehold />} />
-                <Route path="/dogs/:id" element={<DogProfile />} />
+                <Route path="/dogs/:id/*" element={<DogProfile />} />
 
             </Route>
         </Routes>
