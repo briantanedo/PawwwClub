@@ -4,8 +4,6 @@ At Pawww.Club, our mission is to revolutionize the dog breeding and ownership ex
 
 ## Development
 
----
-
 ### To Do:
 
 - [ ]  Dog Profile Page
